@@ -1,0 +1,17 @@
+
+Best use of 'vendor' subdir is to combine with git submodule to pin
+external dependencies (repos) on specific tags.
+
+For each golang project, the 'vendor' subdir must be a decendant of
+the GOPATH.  The recommended project-dir setup is as follows:
+
+${GOPATH}
+ \__ src
+     \__ ${PROJ_TOP}
+         |__ .git
+         \__ vendor
+             |__ VENDOR_1/PROJ_X  (for import "VENDOR_1/PROJ_X/PKG/PATH")
+             \__ VENDOR_2/PROJ_Y  (for import "VENDOR_2/PROJ_Y/PKG/PATH")
+
+See 'git-submodule.txt' for how to set up VENDOR_x/PROJ_y for pinning
+external releases.

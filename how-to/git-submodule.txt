@@ -1,0 +1,29 @@
+
+To see the submodule(s) and their paths, do:
+  git submodule status
+
+To checkout code of all submodules, do:
+  git submodule update --init --recursive
+
+To "uncheckout" the code of a submodule, do:
+  git deinit -f PATH/TO/THE_SUBMODULE
+
+To add a submodule, do:
+  git submodule add URL PATH/TO/THE_SUBMODULE
+  pushd PATH/TO/THE_SUBMODULE
+  git checkout { BRANCH | TAG }
+  popd
+  git add PATH/TO/THE_SUBMODULE
+  git commit
+
+To change the URL of a submodule, do:
+  git submodule deinit -f PATH/TO/THE_SUBMODULE
+  git config -f .gitmodules submodule.PATH/TO/THE_MODULE.url NEW_URL
+  git add .gitmodules
+  git commit
+
+To remove a submodule completely, do:
+  git submodule deinit -f PATH/TO/THE_SUBMODULE
+  rm -rf .git/modules/PATH/TO/THE_SUBMODULE
+  git rm -f PATH/TO/THE_SUBMODULE
+  git commit
