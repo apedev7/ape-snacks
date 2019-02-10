@@ -2,16 +2,19 @@
 #
 set -e
 
-REL=1.11.5
-DIR=/opt/$(whoami)/golang-$REL
+a_rel=1.11.5
+a_root=/opt/$(whoami)/golang-$a_rel
+a_path=$a_root/go/bin
+app=$a_path/go
 
-export GOROOT=$DIR/go
-export GOBIN=$DIR/gopath/bin
-export GOPATH=$GOPATH${GOPATH:+:}$DIR/gopath
-export GOCACHE=$DIR/gocache
-export TMPDIR=$DIR/tmp
+export GOROOT=$a_root/go
+export GOBIN=$a_root/gopath/bin
+export GOCACHE=$a_root/gocache
+export GOTMPDIR=$a_root/tmp
+export TMPDIR=$GOTMPDIR
 
-go=$GOROOT/bin/go
+export GOPATH=$GOPATH${GOPATH:+:}$a_root/gopath
+
 
 mkdir_if() {
   for d in "$@" ; do
@@ -19,26 +22,26 @@ mkdir_if() {
   done
 }
 
-install_go() {
-  mkdir_if "$GOBIN" "$TMPDIR"
+install_app() {
+  mkdir_if "$GOBIN" "$GOTMPDIR"
 
   local os=linux
   local arch=amd64
-  local url="https://dl.google.com/go/go$REL.$os-$arch.tar.gz"
+  local url="https://dl.google.com/go/go$a_rel.$os-$arch.tar.gz"
 
-  echo "Installing to $DIR"
+  echo "Installing to $a_root"
   echo "  from $url ..."
-  curl -SL "$url" | tar -zxf - -C $DIR
+  curl -SL "$url" | tar -zxf - -C $a_root
 }
 
-[ -x "$go" ] || install_go
+[ -x "$app" ] || install_app
 
 # Custom verb: build-static
 if [ ":$1" = ":build-static" ] ; then
   shift
   export CGO_ENABLED=0
-  go="$go build -ldflags -extldflags=-static"
+  app="$app build -ldflags -extldflags=-static"
 fi
 
 # Launch
-PATH="$GOROOT/bin:$PATH" exec $go "$@"
+PATH="$a_path:$PATH" exec $app "$@"
