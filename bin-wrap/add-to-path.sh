@@ -29,3 +29,4 @@ add() {
 add bwrap-chroot
 add bwrap-sudo bwrap-chroot.sh
 add go go.sh
+add docker-machine docker-machine.sh
