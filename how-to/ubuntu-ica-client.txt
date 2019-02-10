@@ -1,0 +1,6 @@
+
+== Problem:
+"Unknown error 1000119. Verify your connection settings and try again."
+
+-- Solution:
+https://askubuntu.com/questions/901448/citrix-receiver-error-1000119
