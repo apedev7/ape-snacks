@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+set -e
+
 REL=0.3.1
 
 BLD=$(dirname $(readlink -e $0))/bld
