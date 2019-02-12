@@ -4,7 +4,7 @@ set -e
 
 REL=0.3.1
 
-BLD=$(dirname $(readlink -e $0))/bld
+BLD=/scratch/$(whoami)/build-static-bwrap-$REL
 
 get_src() {
   [ -x "$BLD/configure" ] && return 0
