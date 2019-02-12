@@ -61,7 +61,7 @@ if [ -n "$SUDO_USER" ] ; then
     libvirtd libvirt \
     kvm \
   ; do
-    getent group $g && adduser $SUDO_USER $g
+    grep -q "^$g:" /etc/group && adduser $SUDO_USER $g
   done
 fi
 
