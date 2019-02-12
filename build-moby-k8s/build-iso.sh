@@ -4,14 +4,13 @@
 kit_rel=v0.6
 k8s_rel=7622bd4
 
-a_root=/opt/$(whoami)/moby-k8s_g$k8s_rel
-a_path=$a_root/dist
-
+a_path=/opt/$(whoami)/moby-k8s_g$k8s_rel
 kit_app=$a_path/linuxkit
 ssh_key=$a_path/admin_ssh_key
 
-bld_src=$a_root/k8s_src
-bld_tmp=$a_root/tmp
+bld_dir=/scratch/$(whoami)/build-moby-k8s_g$k8s_rel
+bld_src=$bld_dir/k8s_src
+bld_tmp=$bld_dir/tmp
 
 die() {
   echo >&2 "$@"
@@ -39,6 +38,15 @@ install_kit_app() {
 
   mkdir_if "$a_path"
 
+  # Local wrapper scripts
+  local here="$(dirname $(readlink -e $0))"
+  for s in \
+    boot-qemu.sh \
+  ; do
+    cp -p "$here/$s" "$a_path/$s"
+  done
+
+  # External prebuilt
   local a_site="https://github.com/linuxkit/linuxkit"
   local a_rel="$kit_rel/linuxkit-linux-amd64"
   local a_url="$a_site/releases/download/$a_rel"
@@ -50,14 +58,6 @@ install_kit_app() {
 
   chmod +x "$kit_app.tmp"
   mv "$kit_app.tmp" "$kit_app"
-
-  # Add local wraper scripts
-  local here="$(dirname $(readlink $0))"
-  for s in \
-    boot-qemu.sh \
-  ; do
-    cp -p "$here/$a" "$a_path/$a"
-  done
 }
 
 install_k8s_src() {
