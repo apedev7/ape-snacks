@@ -42,6 +42,7 @@ install_kit_app() {
   local here="$(dirname $(readlink -e $0))"
   for s in \
     boot-qemu.sh \
+    test-whalesay.yml \
   ; do
     cp -p "$here/$s" "$a_path/$s"
   done
