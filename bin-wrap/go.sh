@@ -3,7 +3,7 @@
 set -e
 
 a_rel=1.12.1
-a_root=/opt/$(whoami)/golang-$a_rel
+a_root=/scratch/$(whoami)/golang-$a_rel
 a_path=$a_root/go/bin
 app=$a_path/go
 
