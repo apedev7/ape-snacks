@@ -2,7 +2,7 @@
 #
 set -e
 
-a_rel=1.11.5
+a_rel=1.12.1
 a_root=/opt/$(whoami)/golang-$a_rel
 a_path=$a_root/go/bin
 app=$a_path/go
@@ -15,6 +15,8 @@ export TMPDIR=$GOTMPDIR
 
 export GOPATH=$GOPATH${GOPATH:+:}$a_root/gopath
 
+# Add current to GOPATH if 'src' subdir exists
+[ -d "${PWD}/src" ] && GOPATH="${PWD}:${GOPATH}"
 
 mkdir_if() {
   for d in "$@" ; do
