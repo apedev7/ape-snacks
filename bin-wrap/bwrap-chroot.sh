@@ -89,8 +89,9 @@ exec $BWRAP_BIN \
 	--bind "$ROOT_DIR" / \
 	--dir "$HOME" \
 	--dir /proc --proc /proc     \
-	--dir /dev  --bind /dev /dev \
+	--dir /dev  --dev  /dev      \
 	--dir /sys  --bind /sys /sys \
 	--dir /tmp  --bind /tmp /tmp \
         $(robind_etc) \
 	$EXEC_BIN "$@"
+
