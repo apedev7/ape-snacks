@@ -17,12 +17,15 @@ set -e
 core_rel=0.16.1
 drvr_rel=bab75de
 
-a_root=/opt/$(whoami)/docker-machine-v$core_rel-qemu-g$drvr_rel
+a_root=/scratch/$(whoami)/docker-machine-v$core_rel-qemu-g$drvr_rel
 a_path=$a_root/bin
 a_data=$a_root/var
 a_home=$HOME/.docker/machine
 
 app=$a_path/docker-machine
+
+a_qemu=qemu-system-x86_64
+
 
 die() {
   echo >&2 "$@"
@@ -66,13 +69,55 @@ has_kvm() {
 }
 
 has_qemu() {
-  local q=qemu-system-x86_64
+  local q=$qemu
   local p="$(which $q)"
 
   [ -z "$p" ] && die "$q: Not in your PATH!"
   [ -x "$p" ] || die "$p: Not executable!"
 
+  qemu=$p
   return 0
+}
+
+wrap_qemu_system() {
+  # Inject a wrapper for qemu-system to add additional host-port redirects
+  # for user-mode network.
+  local qi=qemu-wrapper
+  local qx="$a_path/$qi"
+  cat <<'EOF' | sed "s:bin=:bin=$qemu:" > "$qx.tmp"
+#!/bin/sh
+# Workaround for missing
+#  https://github.com/ipatch/docker-machine-driver-qemu/commit/1d6b42f
+set -e
+
+bin=
+
+[ ":$1" = ":resize" ] && exec $bin "$1" "$2" "${3%MB}M"
+exec $bin "$@"
+EOF
+  chmod +x "$qx.tmp"
+  mv "$qx.tmp" "$qx"
+}
+
+wrap_qemu_img() {
+  # Need to inject a wrapper for qemu-img to work around the driver bug
+  # (https://github.com/ipatch/docker-machine-driver-qemu/commit/1d6b42f)
+  # not fixed in the downloaded prebuilt.
+  local qi=qemu-img
+  local qx="$a_path/$qi"
+  cat <<'EOF' | sed "s:bin=:bin=$(which $qi):" > "$qx.tmp"
+#!/bin/sh
+# Workaround for missing
+#  https://github.com/ipatch/docker-machine-driver-qemu/commit/1d6b42f
+set -e
+
+bin=
+
+[ ":$1" = ":resize" ] && exec $bin "$1" "$2" "${3%MB}M"
+exec $bin "$@"
+EOF
+  chmod +x "$qx.tmp"
+  mv "$qx.tmp" "$qx"
 }
 
 install_app() {
@@ -99,25 +144,6 @@ install_app() {
   curl -SL "$a_url" -o "$app.tmp"
   chmod +x "$app.tmp"
   mv "$app.tmp" "$app"
-
-  # Need to inject a wrapper for qemu-img to work around the driver bug
-  # (https://github.com/ipatch/docker-machine-driver-qemu/commit/1d6b42f)
-  # not fixed in the downloaded prebuilt.
-  local qi=qemu-img
-  local qx="$a_path/$qi"
-  cat <<'EOF' | sed "s:bin=:bin=$(which $qi):" > "$qx.tmp"
-#!/bin/sh
-# Workaround for missing
-#  https://github.com/ipatch/docker-machine-driver-qemu/commit/1d6b42f
-set -e
-
-bin=
-
-[ ":$1" = ":resize" ] && exec $bin "$1" "$2" "${3%MB}M"
-exec $bin "$@"
-EOF
-  chmod +x "$qx.tmp"
-  mv "$qx.tmp" "$qx"
 }
 
 install_app
