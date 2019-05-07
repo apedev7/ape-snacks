@@ -32,3 +32,4 @@ add go go.sh
 add docker-machine docker-machine.sh
 add cs-gen cs-gen.pl
 add git-tar git-tar.sh
+add git-showtool git-showtool.sh
