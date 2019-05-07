@@ -31,3 +31,4 @@ add bwrap-sudo bwrap-chroot.sh
 add go go.sh
 add docker-machine docker-machine.sh
 add cs-gen cs-gen.pl
+add git-tar git-tar.sh
