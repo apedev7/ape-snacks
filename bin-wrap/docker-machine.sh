@@ -144,6 +144,10 @@ install_app() {
   curl -SL "$a_url" -o "$app.tmp"
   chmod +x "$app.tmp"
   mv "$app.tmp" "$app"
+
+  # Install wrappers
+  wrap_qemu_img
+  wrap_qemu_system
 }
 
 install_app
