@@ -54,7 +54,8 @@ else
   for x in bash ash sh csh zsh null ; do
     [ "$x" = "null" ] && die "$ROOT_DIR/bin: No shell!"
     if test_bin "/bin/$x" probe ; then
-      EXEC_BIN="/bin/$x"
+      EXEC_BIN="/bin/$x -l"
+      IS_SHELL="--setenv SHELL /bin/$x"
       break
     fi
   done
@@ -82,10 +83,41 @@ robind_etc() {
   done
 }
 
+unsetenv() {
+  for n in $(printenv | cut -d= -f1); do
+    case $n in
+      DISPLAY | \
+      TERM | \
+      LANG )
+	;;
+      *)
+        echo -n " --unsetenv $n"
+	;;
+    esac
+  done
+}
+
+unsetenv1() {
+  for n in \
+    HOME \
+    LD_LIBRARY_PATH \
+    MAIL \
+    MANPATH \
+    PATH \
+    SHELL \
+    SHLVL \
+    OPENWINHOME \
+    X11HOME \
+  ; do
+    echo
+  done
+}
+
 exec $BWRAP_BIN \
 	$SUDO \
+	$(unsetenv) \
+	$IS_SHELL \
 	--setenv PS1 "$THIS_"':\w \$ ' \
-	--unsetenv PATH \
 	--bind "$ROOT_DIR" / \
 	--dir "$HOME" \
 	--dir /proc --proc /proc     \
